@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build: ./path/to/your/app  # Укажите путь к директории с вашим приложением
+    ports:
+      - 5000:5000  # Порт, на котором будет доступно ваше приложение
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: your_username  # Замените на ваше имя пользователя
+      POSTGRES_PASSWORD: your_password  # Замените на ваш пароль
+      POSTGRES_DB: your_database  # Замените на название вашей базы данных
+      POSTGRES_INITDB_ARGS: "--username=your_username --pwfile=<(echo your_password) --auth=md5"  # Замените на ваше имя пользователя и пароль
+    volumes:
+      - ./data:/var/lib/postgresql/data  # Путь к директории для сохранения данных PostgreSQL
+      - ./initdb:/docker-entrypoint-initdb.d  # Путь к директории с initdb скриптом
