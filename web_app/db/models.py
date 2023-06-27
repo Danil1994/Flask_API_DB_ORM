@@ -2,14 +2,7 @@ import psycopg2
 from sqlalchemy import (Column, ForeignKey, Integer, String, Table,
                         create_engine)
 from sqlalchemy.orm import declarative_base, relationship
-
-conn_params = {
-    'host': '127.0.0.1',
-    'port': '5432',
-    'database': 'task_10_db',
-    'user': 'postgres',
-    'password': '1111'
-}
+from config import conn_params
 
 # Connect to DB
 conn = psycopg2.connect(**conn_params)
@@ -32,6 +25,9 @@ class GroupModel(Base):
 
     students = relationship("StudentModel", back_populates="group")
 
+    def __repr__(self):
+        return f"Group '{self.name}' id={self.id}"
+
 
 class StudentModel(Base):
     __tablename__ = 'student'
@@ -42,6 +38,10 @@ class StudentModel(Base):
 
     group = relationship("GroupModel", back_populates="students")
     courses = relationship("CourseModel", secondary=student_course_association, back_populates="students")
+
+    def __repr__(self):
+        return f"Student(id={self.id}, group_id={self.group_id}, " \
+               f"first_name='{self.first_name}', last_name='{self.last_name}')"
 
 
 class CourseModel(Base):
