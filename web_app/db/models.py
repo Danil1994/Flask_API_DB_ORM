@@ -2,15 +2,16 @@ import psycopg2
 from sqlalchemy import (Column, ForeignKey, Integer, String, Table,
                         create_engine)
 from sqlalchemy.orm import declarative_base, relationship
+
 from config import conn_params
 
+Base = declarative_base()
 # Connect to DB
 conn = psycopg2.connect(**conn_params)
 
 # Create session SQLAlchemy
 engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
 
-Base = declarative_base()
 
 student_course_association = Table('student_course_association', Base.metadata,
                                    Column('student_id', Integer, ForeignKey('student.id')),

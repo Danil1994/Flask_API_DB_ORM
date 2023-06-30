@@ -1,21 +1,33 @@
+import sqlalchemy
 from sqlalchemy import func
 
+from config import create_db_engine_and_session
 from logger import logger
-from web_app.db.create_data_func import session
+from web_app.data_transform_func import (made_list_with_dicts,
+                                         made_list_with_students_dict)
 from web_app.db.models import CourseModel, GroupModel, StudentModel
+
+session = create_db_engine_and_session()
 
 
 # Find all groups with less or equal student count:
-def find_groups_with_student_count(student_count: int) -> list[GroupModel]:
-    groups = session.query(GroupModel).join(GroupModel.students).group_by(GroupModel.id).having(
-        func.count(StudentModel.id) <= student_count).all()
-    return groups
+def find_groups_with_student_count(student_count: int, session: sqlalchemy.orm.Session = session) -> list[dict]:
+    try:
+        groups = session.query(GroupModel).join(GroupModel.students).group_by(GroupModel.id).having(
+            func.count(StudentModel.id) <= student_count).all()
+        return made_list_with_dicts(groups)
+    except Exception as e:
+        logger.error(f"An error occurred: {str(e)}")
 
 
 # Find all students related to the course with a given name:
-def find_students_related_to_the_course(course_name: str) -> list[StudentModel]:
-    students = session.query(StudentModel).join(StudentModel.courses).filter(CourseModel.name == course_name).all()
-    return students
+def find_students_related_to_the_course(course_name: str, session: sqlalchemy.orm.Session = session) -> \
+        list[StudentModel]:
+    try:
+        students = session.query(StudentModel).join(StudentModel.courses).filter(CourseModel.name == course_name).all()
+        return made_list_with_students_dict(students)
+    except Exception as e:
+        logger.error(f"An error occurred: {str(e)}")
 
 
 # Add a new student:
@@ -53,7 +65,7 @@ def add_student_to_the_course(student_id: int, course_id: int) -> None:
 
 
 # Remove the student from one of his or her courses:
-def remove_student_to_other_course(student_id: int, course_id: int):
+def remove_student_from_course(student_id: int, course_id: int):
     try:
         student = session.query(StudentModel).get(student_id)
         course = session.query(CourseModel).get(course_id)

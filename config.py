@@ -41,5 +41,5 @@ conn = psycopg2.connect(**conn_params)
 # Create the database engine and session
 def create_db_engine_and_session():
     engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
-    Session = sessionmaker(bind=engine)
-    return Session()
+    session = sessionmaker(bind=engine)
+    return session()
