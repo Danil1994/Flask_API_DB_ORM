@@ -1,0 +1,16 @@
+parameters:
+  - in: query
+    name: student_count
+    schema:
+      type: integer
+    description: Number of students to filter by (optional)
+  - in: query
+    name: format
+    schema:
+      type: string
+    description: Response format (optional)
+responses:
+  '200':
+    description: Successful response
+  '400':
+    description: Bad request

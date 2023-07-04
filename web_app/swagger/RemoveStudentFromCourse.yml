@@ -1,0 +1,18 @@
+parameters:
+  - name: student_id
+    in: path
+    description: ID of the student to be removed
+    required: true
+    type: integer
+  - name: course_id
+    in: path
+    description: ID of the course from which the student should be removed
+    required: true
+    type: integer
+responses:
+  200:
+    description: Successful response
+  404:
+    description: Student or course not found
+  500:
+    description: Internal server error

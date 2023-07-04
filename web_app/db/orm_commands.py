@@ -1,3 +1,5 @@
+from typing import Any, Dict, List, Tuple, Union
+
 import sqlalchemy
 from sqlalchemy import func
 
@@ -22,46 +24,63 @@ def find_groups_with_student_count(student_count: int, session: sqlalchemy.orm.S
 
 # Find all students related to the course with a given name:
 def find_students_related_to_the_course(course_name: str, session: sqlalchemy.orm.Session = session) -> \
-        list[StudentModel]:
+        Union[str, Any]:
     try:
-        students = session.query(StudentModel).join(StudentModel.courses).filter(CourseModel.name == course_name).all()
+        students = session.query(StudentModel).join(StudentModel.courses).filter(
+            CourseModel.name == course_name.capitalize()).all()
         return made_list_with_students_dict(students)
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}"
 
 
 # Add a new student:
-def add_new_student(first_name: str, last_name: str) -> None:
+def create_new_student(first_name: str, last_name: str) -> str:
     try:
-        new_student = StudentModel(first_name=first_name, last_name=last_name)
+        new_student = StudentModel(first_name=first_name.capitalize(), last_name=last_name.capitalize())
         session.add(new_student)
         session.commit()
         logger.info("Student added successfully")
+        return f"New student {first_name, last_name} created successfully"
     except Exception as e:
         logger.error("Error adding student: %s", str(e))
 
 
 # Delete student by STUDENT_ID:
-def del_student(student_id: int) -> None:
+def del_student(student_id: int) -> str:
     try:
         student = session.query(StudentModel).get(student_id)
-        session.delete(student)
-        session.commit()
-        logger.info("Student deleted successfully")
+        if student is None:
+            logger.info(f"Student {student_id} doesn`t exist")
+            return f"Student {student_id} doesn`t exist"
+        else:
+            session.delete(student)
+            session.commit()
+            logger.info("Student deleted successfully")
+            return f"Student {student_id} deleted successfully"
     except Exception as e:
         logger.error("Error by deleted student", str(e))
 
 
 # Add a student to the course (from a list):
-def add_student_to_the_course(student_id: int, course_id: int) -> None:
+def add_student_to_the_course(student_id: int, course_id: int) -> Union[str, tuple[str, str]]:
     try:
         student = session.query(StudentModel).get(student_id)
         course = session.query(CourseModel).get(course_id)
-        student.courses.append(course)
-        session.commit()
-        logger.info("Student was added successfully")
+        if student is None:
+            logger.info(f"Student {student_id} doesn`t exist")
+            return f"Student {student_id} doesn`t exist"
+        elif course is None:
+            logger.info(f"Courser {course_id} doesn`t exist")
+            return f"Courser {course_id} doesn`t exist"
+        else:
+            student.courses.append(course)
+            session.commit()
+            logger.info("Student was added successfully")
+            return f"Student {student_id} was added successfully to the course {course_id}"
     except Exception as e:
         logger.error("Error by adding student: %s", str(e))
+        return "Error by adding student: %s", str(e)
 
 
 # Remove the student from one of his or her courses:
@@ -69,10 +88,17 @@ def remove_student_from_course(student_id: int, course_id: int):
     try:
         student = session.query(StudentModel).get(student_id)
         course = session.query(CourseModel).get(course_id)
-        if course in student.courses:
+        if student is None:
+            logger.info(f"Student {student_id} doesn`t exist")
+            return f"Student {student_id} doesn`t exist"
+        elif course is None:
+            logger.info(f"Courser {course_id} doesn`t exist")
+            return f"Courser {course_id} doesn`t exist"
+        elif course in student.courses:
             student.courses.remove(course)
             session.commit()
-            logger.info("Student was removed from the course")
+            logger.info(f"Student {student_id}  was removed from the course {course_id}")
+            return f"Student {student_id}  was removed from the course {course_id}"
         else:
             logger.warning("Course is not associated with the student")
     except Exception as e:

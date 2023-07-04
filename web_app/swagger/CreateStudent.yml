@@ -1,0 +1,29 @@
+parameters:
+  - name: first_name
+    in: query
+    description: First name of the student
+    required: true
+    type: string
+  - name: last_name
+    in: query
+    description: Last name of the student
+    required: true
+    type: string
+responses:
+  200:
+    description: Successful response
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+        group_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+  400:
+    description: Bad request
+  500:
+    description: Internal server error
