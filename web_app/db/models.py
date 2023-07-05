@@ -1,17 +1,8 @@
-import psycopg2
-from sqlalchemy import (Column, ForeignKey, Integer, String, Table,
-                        create_engine)
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
-
-from config import conn_params
+from sqlalchemy import Table
 
 Base = declarative_base()
-# Connect to DB
-conn = psycopg2.connect(**conn_params)
-
-# Create session SQLAlchemy
-engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
-
 
 student_course_association = Table('student_course_association', Base.metadata,
                                    Column('student_id', Integer, ForeignKey('student.id')),
@@ -38,7 +29,7 @@ class StudentModel(Base):
     last_name = Column(String)
 
     group = relationship("GroupModel", back_populates="students")
-    courses = relationship("CourseModel", secondary=student_course_association, back_populates="students")
+    courses = relationship("CourseModel", secondary="student_course_association", back_populates="students")
 
     def __repr__(self):
         return f"Student(id={self.id}, group_id={self.group_id}, " \
@@ -51,10 +42,8 @@ class CourseModel(Base):
     name = Column(String)
     description = Column(String)
 
-    students = relationship("StudentModel", secondary=student_course_association, back_populates="courses")
+    students = relationship("StudentModel", secondary="student_course_association", back_populates="courses")
 
-
-Base.metadata.create_all(engine)
 
 if __name__ == '__main__':
     pass
