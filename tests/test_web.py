@@ -25,11 +25,5 @@ class CreateStudentTestCase(unittest.TestCase):
         # Assert that the create_new_student function was called with the correct arguments
         mock_create_new_student.assert_called_once_with('John', 'Doe')
 
-        # You can also assert the response content if necessary
-        # For example, if the endpoint returns a JSON response
-        # response_json = response.get_json()
-        # self.assertEqual(response_json, {'message': 'Student created successfully'})
-
-
 if __name__ == '__main__':
     unittest.main()

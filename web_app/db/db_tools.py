@@ -2,22 +2,20 @@ import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 
-from config import conn_params
 from web_app.db.create_data_func import (create_10_course,
                                          create_random_groups, create_students,
                                          random_assign_course_for_student,
                                          random_assign_students_to_groups)
 
 
-def create_db_table():
+def create_db_table(conn_params):
+    base = declarative_base()
     # Connect to DB
     conn = psycopg2.connect(**conn_params)
 
     # Create session SQLAlchemy
     engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
-
-    Base = declarative_base()
-    Base.metadata.create_all(engine)
+    base.metadata.create_all(engine)
 
 
 def create_test_data_in_db():

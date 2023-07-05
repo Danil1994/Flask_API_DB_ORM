@@ -24,4 +24,4 @@ api.add_resource(RemoveStudentFromCourse, '/api/v1/student/<student_id>/remove_c
 swagger = Swagger(app)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    pass
