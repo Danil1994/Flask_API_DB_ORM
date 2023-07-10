@@ -7,15 +7,33 @@ from web_app.db.func_to_create_data import (create_10_course,
                                             create_random_groups, create_students,
                                             random_assign_course_for_student,
                                             random_assign_students_to_groups)
+from web_app.db.models import GroupModel, StudentModel, CourseModel, student_course_association
+from sqlalchemy import delete
+from sqlalchemy.orm import sessionmaker
 
-# Создание соединения SQLAlchemy
-engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
-
-# Создание соединения с базой данных
+# Connect to DB
 conn = psycopg2.connect(**conn_params)
+
+# Create session SQLAlchemy
+engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+
+def clean_table():
+    delete_stmt = student_course_association.delete()
+    session.execute(delete_stmt)
+    session.commit()
+
+    session.query(StudentModel).delete()
+    session.query(GroupModel).delete()
+
+    session.query(CourseModel).delete()
+    session.commit()
 
 
 def create_test_data_in_db():
+    clean_table()
     groups = create_random_groups(10)
     course = create_10_course()
 
@@ -28,4 +46,4 @@ def create_test_data_in_db():
 
 
 if __name__ == '__main__':
-    create_test_data_in_db()
+    pass

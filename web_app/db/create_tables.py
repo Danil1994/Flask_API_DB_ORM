@@ -19,4 +19,4 @@ def create_tables():
 
 
 if __name__ == '__main__':
-    pass
+    create_tables()

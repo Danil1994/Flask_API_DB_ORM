@@ -4,6 +4,11 @@ parameters:
     description: ID of the student to be deleted
     required: true
     type: integer
+  - in: query
+    name: format
+    schema:
+      type: string
+    description: Response format (optional)
 responses:
   200:
     description: Successful response

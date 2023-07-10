@@ -9,6 +9,11 @@ parameters:
     description: ID of the course from which the student should be removed
     required: true
     type: integer
+  - in: query
+    name: format
+    schema:
+      type: string
+    description: Response format (optional)
 responses:
   200:
     description: Successful response

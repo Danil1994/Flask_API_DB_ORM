@@ -4,6 +4,11 @@ parameters:
     description: Course name
     required: true
     type: string
+  - in: query
+    name: format
+    schema:
+      type: string
+    description: Response format (optional)
 responses:
   200:
     description: Successful response

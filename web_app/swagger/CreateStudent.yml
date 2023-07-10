@@ -9,6 +9,11 @@ parameters:
     description: Last name of the student
     required: true
     type: string
+  - in: query
+    name: format
+    schema:
+      type: string
+    description: Response format (optional)
 responses:
   200:
     description: Successful response
