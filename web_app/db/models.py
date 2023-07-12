@@ -45,5 +45,7 @@ class CourseModel(Base):
     students = relationship("StudentModel", secondary="student_course_association", back_populates="courses")
 
 
+ALL_MODELS = [StudentModel, CourseModel, GroupModel]
+
 if __name__ == '__main__':
     pass

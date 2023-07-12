@@ -1,10 +1,7 @@
 import unittest
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
-from config import create_db_engine_and_session
-
+from sqlalchemy.orm import sessionmaker
 
 from config import conn
 from web_app.db.create_test_data import create_test_data_in_db, clean_table

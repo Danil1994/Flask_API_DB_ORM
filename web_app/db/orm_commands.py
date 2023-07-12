@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, List, Tuple, Union
 
 import sqlalchemy
@@ -12,7 +14,7 @@ session = create_db_engine_and_session()
 
 
 # Find all groups with less or equal student count:
-def find_groups_with_student_count(student_count: int, session: sqlalchemy.orm.Session = session) -> list[dict]:
+def find_groups_with_student_count(student_count: int, session: sqlalchemy.orm.Session = session) -> list[GroupModel]:
     try:
         groups = session.query(GroupModel).join(GroupModel.students).group_by(GroupModel.id).having(
             func.count(StudentModel.id) <= student_count).all()
@@ -23,7 +25,7 @@ def find_groups_with_student_count(student_count: int, session: sqlalchemy.orm.S
 
 # Find all students related to the course with a given name:
 def find_students_related_to_the_course(course_name: str, session: sqlalchemy.orm.Session = session) -> \
-        Union[str, Any]:
+        list[dict] | str:
     try:
         students = session.query(StudentModel).join(StudentModel.courses).filter(
             CourseModel.name == course_name.capitalize()).all()
@@ -34,7 +36,7 @@ def find_students_related_to_the_course(course_name: str, session: sqlalchemy.or
 
 
 # Add a new student:
-def create_new_student(first_name: str, last_name: str) -> Union[dict[str, str], dict[str, tuple[str, str]]]:
+def create_new_student(first_name: str, last_name: str) -> dict[str, str]:
     try:
         new_student = StudentModel(first_name=first_name.capitalize(), last_name=last_name.capitalize())
         session.add(new_student)
@@ -47,7 +49,7 @@ def create_new_student(first_name: str, last_name: str) -> Union[dict[str, str],
 
 
 # Delete student by STUDENT_ID:
-def del_student(student_id: int) -> Union[dict[str, str], str]:
+def delete_student(student_id: int) -> dict[str, str]:
     try:
         student = session.query(StudentModel).get(student_id)
         if student is None:
@@ -64,8 +66,7 @@ def del_student(student_id: int) -> Union[dict[str, str], str]:
 
 
 # Add a student to the course (from a list):
-def add_student_to_the_course(student_id: int, course_id: int) -> Union[
-    dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
+def add_student_to_the_course(student_id: int, course_id: int) -> dict[str, str]:
     try:
         student = session.query(StudentModel).get(student_id)
         course = session.query(CourseModel).get(course_id)
@@ -86,17 +87,12 @@ def add_student_to_the_course(student_id: int, course_id: int) -> Union[
 
 
 # Remove the student from one of his or her courses:
-def remove_student_from_course(student_id: int, course_id: int):
+def remove_student_from_course(student_id: int, course_id: int) -> dict[str, str]:
     try:
         student = session.query(StudentModel).get(student_id)
         course = session.query(CourseModel).get(course_id)
-        if student is None:
-            logger.info(f"Student {student_id} doesn`t exist")
-            return {'Response error': f"Student {student_id} doesn`t exist"}
-        elif course is None:
-            logger.info(f"Courser {course_id} doesn`t exist")
-            return {'Response error': f"Courser {course_id} doesn`t exist"}
-        elif course in student.courses:
+
+        if course in student.courses:
             student.courses.remove(course)
             session.commit()
             logger.info(f"Student {student_id}  was removed from the course {course_id}")
@@ -104,6 +100,7 @@ def remove_student_from_course(student_id: int, course_id: int):
         else:
             logger.warning("Course is not associated with the student")
             return {'Response error': "Course is not associated with the student"}
+
     except Exception as e:
         logger.error("Error: %s", str(e))
 

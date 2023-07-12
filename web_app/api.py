@@ -9,9 +9,16 @@ from dict2xml import dict2xml
 
 from web_app.constants import MyEnum
 from web_app.db.orm_commands import (create_new_student, add_student_to_the_course,
-                                     del_student, find_groups_with_student_count,
+                                     delete_student, find_groups_with_student_count,
                                      find_students_related_to_the_course,
                                      remove_student_from_course)
+
+
+def serialize_model(model):
+    return {
+        'id': model.id,
+        'name': model.name
+    }
 
 
 def output_formatted_data_from_dict(format_value: MyEnum, info_list: list[any] | dict) -> Response:
@@ -39,7 +46,8 @@ def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] |
 
         return Response(response=resp, status=200, headers={'Content-Type': 'application/xml'})
     else:
-        json_str = json.dumps(info_list)
+        json_list = [serialize_model(model) for model in info_list]
+        json_str = json.dumps(json_list)
         return Response(response=json_str.encode('utf-8'), status=200, headers={'Content-Type': 'application/json'})
 
 
@@ -77,7 +85,7 @@ class DeleteStudent(Resource):
     @swag_from('swagger/DeleteStudent.yml')
     def get(self, student_id):
         response_format = MyEnum(request.args.get('format', default='json'))
-        response = del_student(student_id)
+        response = delete_student(student_id)
         return output_formatted_data_from_dict(response_format, response)
 
 
