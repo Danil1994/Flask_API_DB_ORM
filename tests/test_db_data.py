@@ -1,8 +1,8 @@
 from sqlalchemy import inspect
 
 from tests.base_test_class import BaseTest
+from web_app.db.models import CourseModel, GroupModel, StudentModel
 
-from web_app.db.models import GroupModel, CourseModel, StudentModel
 
 class CheckBD(BaseTest):
     def test_table_creation(self):

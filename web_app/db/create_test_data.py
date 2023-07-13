@@ -1,14 +1,14 @@
 import psycopg2
-from config import conn_params
-
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
+from config import conn_params
 from web_app.db.func_to_create_data import (create_10_course,
-                                            create_random_groups, create_students,
+                                            create_random_groups,
+                                            create_students,
                                             random_assign_course_for_student,
                                             random_assign_students_to_groups)
 from web_app.db.models import ALL_MODELS, StudentCourseAssociation
-from sqlalchemy.orm import sessionmaker
 
 # Connect to DB
 conn = psycopg2.connect(**conn_params)
@@ -28,7 +28,6 @@ def reset_auto_increment(table_name, column_name):
 def clean_table():
     session.query(StudentCourseAssociation).delete()
     session.commit()
-
 
     for model in ALL_MODELS:
         session.query(model).delete()

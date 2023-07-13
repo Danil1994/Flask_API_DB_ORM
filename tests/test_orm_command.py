@@ -1,18 +1,15 @@
-import unittest
 import random
 from unittest import mock
 
 from tests.base_test_class import BaseTest
-
 from web_app.db.create_test_data import session
-from web_app.db.models import CourseModel, GroupModel, StudentModel, StudentCourseAssociation
-from web_app.db.orm_commands import (find_groups_with_student_count,
+from web_app.db.models import (CourseModel, StudentCourseAssociation,
+                               StudentModel)
+from web_app.db.orm_commands import (add_student_to_the_course,
+                                     create_new_student, delete_student,
+                                     find_groups_with_student_count,
                                      find_students_related_to_the_course,
-                                     create_new_student,
-                                     delete_student,
-                                     add_student_to_the_course,
-                                     remove_student_from_course,
-                                     )
+                                     remove_student_from_course)
 
 
 def any_student():
@@ -118,5 +115,3 @@ class TestORM(BaseTest):
         self.assertNotEqual(student_courses, new_student_courses)
         self.assertEqual(new_student_courses, [])
         mock_log.info.assert_called()
-
-

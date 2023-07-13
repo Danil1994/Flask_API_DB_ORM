@@ -2,13 +2,10 @@ from flasgger import Swagger
 from flask import Flask
 from flask_restful import Api
 
-
-from web_app.api import (AddStudentToTheCourse,
-                         DeleteStudent,
+from web_app.api import (AddStudentToTheCourse, CreateStudent, DeleteStudent,
                          FindGroupsWithStudentCount,
-                         FindStudentsRelatedToTheCourse,
-                         HelloWorld,
-                         CreateStudent, RemoveStudentFromCourse)
+                         FindStudentsRelatedToTheCourse, HelloWorld,
+                         RemoveStudentFromCourse)
 
 app = Flask(__name__)
 api = Api(app)

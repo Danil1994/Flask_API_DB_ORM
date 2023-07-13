@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple, Union
-
 import sqlalchemy
 from sqlalchemy import func
 
 from config import create_db_engine_and_session
 from logger import logger
-
 from web_app.db.models import CourseModel, GroupModel, StudentModel
 
 session = create_db_engine_and_session()

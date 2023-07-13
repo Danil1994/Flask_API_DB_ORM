@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from config import conn
-from web_app.db.create_test_data import create_test_data_in_db, clean_table
+from web_app.db.create_test_data import clean_table, create_test_data_in_db
 
 
 class BaseTest(unittest.TestCase):

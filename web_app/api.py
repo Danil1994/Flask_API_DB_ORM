@@ -1,15 +1,17 @@
 from __future__ import annotations
-import xml.etree.ElementTree as ET
-import json
 
-from flask import request, Response
-from flask_restful import Resource
-from flasgger import swag_from
+import json
+import xml.etree.ElementTree as ET
+
 from dict2xml import dict2xml
+from flasgger import swag_from
+from flask import Response, request
+from flask_restful import Resource
 
 from web_app.constants import MyEnum
-from web_app.db.orm_commands import (create_new_student, add_student_to_the_course,
-                                     delete_student, find_groups_with_student_count,
+from web_app.db.orm_commands import (add_student_to_the_course,
+                                     create_new_student, delete_student,
+                                     find_groups_with_student_count,
                                      find_students_related_to_the_course,
                                      remove_student_from_course)
 

@@ -1,8 +1,9 @@
 import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from web_app.db.models import Base
+
 from config import conn_params
+from web_app.db.models import Base
 
 # Connect to DB
 conn = psycopg2.connect(**conn_params)
