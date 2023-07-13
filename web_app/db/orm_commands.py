@@ -25,7 +25,7 @@ def find_groups_with_student_count(student_count: int, session: sqlalchemy.orm.S
 
 # Find all students related to the course with a given name:
 def find_students_related_to_the_course(course_name: str, session: sqlalchemy.orm.Session = session) -> \
-        list[dict] | str:
+        list[StudentModel] | str:
     try:
         students = session.query(StudentModel).join(StudentModel.courses).filter(
             CourseModel.name == course_name.capitalize()).all()

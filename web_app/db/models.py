@@ -1,13 +1,19 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy import Table
 
 Base = declarative_base()
 
-student_course_association = Table('student_course_association', Base.metadata,
-                                   Column('student_id', Integer, ForeignKey('student.id')),
-                                   Column('course_id', Integer, ForeignKey('course.id'))
-                                   )
+
+class StudentCourseAssociation(Base):
+    __tablename__ = 'student_course_association'
+    student_id = Column(Integer, ForeignKey('student.id'), primary_key=True)
+    course_id = Column(Integer, ForeignKey('course.id'), primary_key=True)
+
+    student = relationship("StudentModel")
+    course = relationship("CourseModel")
+
+    def __repr__(self):
+        return f"StudentCourseAssociation(student_id={self.student_id}, course_id={self.course_id})"
 
 
 class GroupModel(Base):
@@ -29,7 +35,8 @@ class StudentModel(Base):
     last_name = Column(String)
 
     group = relationship("GroupModel", back_populates="students")
-    courses = relationship("CourseModel", secondary="student_course_association", back_populates="students")
+    courses = relationship("CourseModel", secondary=StudentCourseAssociation.__table__, back_populates="students",
+                           overlaps="student")
 
     def __repr__(self):
         return f"Student(id={self.id}, group_id={self.group_id}, " \
@@ -42,7 +49,8 @@ class CourseModel(Base):
     name = Column(String)
     description = Column(String)
 
-    students = relationship("StudentModel", secondary="student_course_association", back_populates="courses")
+    students = relationship("StudentModel", secondary=StudentCourseAssociation.__table__, back_populates="courses",
+                            overlaps="student")
 
 
 ALL_MODELS = [StudentModel, CourseModel, GroupModel]

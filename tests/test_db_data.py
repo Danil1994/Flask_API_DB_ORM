@@ -14,9 +14,9 @@ class CheckBD(BaseTest):
 
     def test_data_creation(self):
         # Проверка, что данные успешно добавлены
-        num_groups = self.session().query(GroupModel).count()
-        num_courses = self.session().query(CourseModel).count()
-        num_students = self.session().query(StudentModel).count()
+        num_groups = self.session.query(GroupModel).count()
+        num_courses = self.session.query(CourseModel).count()
+        num_students = self.session.query(StudentModel).count()
         print(num_students)
         self.assertEqual(num_groups, 10)
         self.assertEqual(num_courses, 10)

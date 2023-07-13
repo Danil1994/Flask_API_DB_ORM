@@ -7,7 +7,7 @@ from web_app.db.func_to_create_data import (create_10_course,
                                             create_random_groups, create_students,
                                             random_assign_course_for_student,
                                             random_assign_students_to_groups)
-from web_app.db.models import ALL_MODELS, student_course_association
+from web_app.db.models import ALL_MODELS, StudentCourseAssociation
 from sqlalchemy.orm import sessionmaker
 
 # Connect to DB
@@ -26,9 +26,9 @@ def reset_auto_increment(table_name, column_name):
 
 
 def clean_table():
-    delete_stmt = student_course_association.delete()
-    session.execute(delete_stmt)
+    session.query(StudentCourseAssociation).delete()
     session.commit()
+
 
     for model in ALL_MODELS:
         session.query(model).delete()
