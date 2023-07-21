@@ -16,7 +16,7 @@ from web_app.db.orm_commands import (add_student_to_the_course,
                                      remove_student_from_course)
 
 
-def serialize_model(model):
+def serialize_model(model) -> {str: str}:
     return {
         'id': model.id,
         'name': model.name
@@ -55,7 +55,7 @@ def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] |
 
 class FindGroupsWithStudentCount(Resource):
     @swag_from('swagger/FindGroupsWithStudentCount.yml')
-    def get(self):
+    def get(self) -> Response:
         stud_count = request.args.get('student_count', default=20)
         response_format = MyEnum(request.args.get('format', default='json'))
         response = find_groups_with_student_count(stud_count)
@@ -65,7 +65,7 @@ class FindGroupsWithStudentCount(Resource):
 
 class FindStudentsRelatedToTheCourse(Resource):
     @swag_from('swagger/FindStudentsRelatedToTheCourse.yml')
-    def get(self):
+    def get(self) -> Response:
         course_name = request.args.get('course')
         response_format = MyEnum(request.args.get('format', default='json'))
         response = find_students_related_to_the_course(course_name)
@@ -75,7 +75,7 @@ class FindStudentsRelatedToTheCourse(Resource):
 
 class CreateStudent(Resource):
     @swag_from('swagger/CreateStudent.yml')
-    def get(self):
+    def get(self) -> Response:
         first_name = request.args.get('first_name')
         last_name = request.args.get('last_name')
         response_format = MyEnum(request.args.get('format', default='json'))
@@ -85,7 +85,7 @@ class CreateStudent(Resource):
 
 class DeleteStudent(Resource):
     @swag_from('swagger/DeleteStudent.yml')
-    def get(self, student_id):
+    def get(self, student_id) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         response = delete_student(student_id)
         return output_formatted_data_from_dict(response_format, response)
@@ -93,7 +93,7 @@ class DeleteStudent(Resource):
 
 class AddStudentToTheCourse(Resource):
     @swag_from('swagger/AddStudentToTheCourse.yml')
-    def get(self, student_id, course_id):
+    def get(self, student_id, course_id) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         response = add_student_to_the_course(student_id, course_id)
         return output_formatted_data_from_dict(response_format, response)
@@ -101,7 +101,7 @@ class AddStudentToTheCourse(Resource):
 
 class RemoveStudentFromCourse(Resource):
     @swag_from('swagger/RemoveStudentFromCourse.yml')
-    def get(self, student_id, course_id):
+    def get(self, student_id, course_id) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         response = remove_student_from_course(student_id, course_id)
         return output_formatted_data_from_dict(response_format, response)

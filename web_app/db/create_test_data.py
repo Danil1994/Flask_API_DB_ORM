@@ -1,4 +1,5 @@
 import psycopg2
+import sqlalchemy
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
@@ -19,25 +20,23 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def reset_auto_increment(table_name, column_name):
+def reset_auto_increment(table_name: str, column_name: str) -> None:
     query = text(f"ALTER SEQUENCE {table_name}_{column_name}_seq RESTART WITH 1")
     session.execute(query)
     session.commit()
 
 
-def clean_table():
-    session.query(StudentCourseAssociation).delete()
-    session.commit()
+def clean_table(_session: sqlalchemy.orm.Session = session, models: list = ALL_MODELS) -> None:
+    _session.query(StudentCourseAssociation).delete()
+    _session.commit()
 
-    for model in ALL_MODELS:
-        session.query(model).delete()
-    session.commit()
+    for model in models:
+        _session.query(model).delete()
+    _session.commit()
 
 
-def create_test_data_in_db():
-    clean_table()
-
-    for model in ALL_MODELS:
+def create_test_data_in_db(models: list = ALL_MODELS) -> None:
+    for model in models:
         reset_auto_increment(model.__tablename__, 'id')
 
     groups = create_random_groups(10)
@@ -52,4 +51,5 @@ def create_test_data_in_db():
 
 
 if __name__ == '__main__':
+    clean_table()
     create_test_data_in_db()

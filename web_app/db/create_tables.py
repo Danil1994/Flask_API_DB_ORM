@@ -9,12 +9,12 @@ from web_app.db.models import Base
 conn = psycopg2.connect(**conn_params)
 
 # Create session SQLAlchemy
-engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
+engine = create_engine('postgresql+psycopg2://', creator=lambda: conn, echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 
 
-def create_tables():
+def create_tables() -> None:
     # Create tables
     Base.metadata.create_all(engine)
 

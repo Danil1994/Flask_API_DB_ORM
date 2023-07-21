@@ -10,7 +10,7 @@ from web_app.db.create_test_data import clean_table, create_test_data_in_db
 class BaseTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Создание соединения с базой данных и создание таблиц
+        # create and connect to the DB and create table
         engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
         Session = sessionmaker(bind=engine)
         session = Session()
@@ -18,16 +18,16 @@ class BaseTest(unittest.TestCase):
         cls.session = session
 
     def setUp(self):
-        # Создание тестовых данных
+        # Create test data
         create_test_data_in_db()
 
     def tearDown(self):
-        # Очистка данных и закрытие соединения
-        pass
+        # Clean data
+        clean_table()
 
     @classmethod
     def tearDownClass(cls):
-        # Удаление таблиц и закрытие соединения
+        # Delete table and close connection
         clean_table()
         cls.session.close_all()
 

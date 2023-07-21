@@ -8,6 +8,8 @@ services:
       - .env
     depends_on:
       - db_task_10
+    ports:
+      - "${SWAGGER_PORT_OUT}:${SWAGGER_PORT_IN}"
 
   db_task_10:
     container_name: postgres_container_task_10
@@ -18,6 +20,7 @@ services:
       - "${HOST_PORT}:${CONTAINER_PORT}"
     env_file:
       - .env
+
 
 volumes:
   postgres_data:

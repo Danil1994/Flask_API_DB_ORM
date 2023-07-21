@@ -12,7 +12,7 @@ from web_app.db.orm_commands import (add_student_to_the_course,
                                      remove_student_from_course)
 
 
-def any_student():
+def any_student() -> StudentModel:
     count = session.query(StudentModel).count()
     random_index = random.randint(0, count - 1)
     random_student = session.query(StudentModel).offset(random_index).first()
@@ -23,9 +23,9 @@ def any_student():
 class TestORM(BaseTest):
 
     def test_find_groups_with_student_count(self):
-        result_count_15 = find_groups_with_student_count(15, session=self.session)
+        result_count_15 = find_groups_with_student_count(15, _session=self.session)
         self.assertNotEqual(result_count_15, [])
-        result_count_1 = find_groups_with_student_count(1, session=self.session)
+        result_count_1 = find_groups_with_student_count(1, _session=self.session)
         self.assertEqual(result_count_1, [])
 
     @mock.patch('web_app.db.orm_commands.logger')

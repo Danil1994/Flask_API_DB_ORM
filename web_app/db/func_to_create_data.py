@@ -8,7 +8,7 @@ session = create_db_engine_and_session()
 
 
 # Create 10 groups with randomly generated names
-def create_random_groups(count_of_group):
+def create_random_groups(count_of_group: int) -> list[GroupModel]:
     groups = []
     for _ in range(count_of_group):
         name = ''.join(random.choices(string.ascii_uppercase, k=2)) + '-' + ''.join(random.choices(string.digits, k=2))
@@ -20,7 +20,7 @@ def create_random_groups(count_of_group):
 
 
 # Create 10 courses
-def create_10_course():
+def create_10_course() -> list[CourseModel]:
     courses = [
         CourseModel(name="Math", description="Math course"),
         CourseModel(name="Biology", description="Biology course"),
@@ -39,7 +39,7 @@ def create_10_course():
 
 
 # Create 200 students with randomly assigned names and groups
-def create_students(list_of_first_name: list[str], list_of_last_name: list[str]):
+def create_students(list_of_first_name: list[str], list_of_last_name: list[str]) -> list[StudentModel]:
     students = []
     for _ in range(200):
         first_name = random.choice(list_of_first_name)
@@ -52,7 +52,7 @@ def create_students(list_of_first_name: list[str], list_of_last_name: list[str])
 
 
 # Randomly assign students to groups
-def random_assign_students_to_groups(students: list, groups: list):
+def random_assign_students_to_groups(students: list, groups: list) -> None:
     for student in students:
         group = random.choice(groups)
         student.group = group
@@ -60,7 +60,7 @@ def random_assign_students_to_groups(students: list, groups: list):
 
 
 # Randomly assign 1 to 3 courses for each student
-def random_assign_course_for_student(students: list, courses: list):
+def random_assign_course_for_student(students: list, courses: list) -> None:
     for student in students:
         num_courses = random.randint(1, min(3, len(courses)))  # Limit num_courses to the available number of courses
         student.courses = random.sample(courses, num_courses)
