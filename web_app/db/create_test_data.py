@@ -1,9 +1,7 @@
-import psycopg2
 import sqlalchemy
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 
-from config import conn_params
+from config import create_db_engine_and_session
 from web_app.db.func_to_create_data import (create_10_course,
                                             create_random_groups,
                                             create_students,
@@ -11,13 +9,7 @@ from web_app.db.func_to_create_data import (create_10_course,
                                             random_assign_students_to_groups)
 from web_app.db.models import ALL_MODELS, StudentCourseAssociation
 
-# Connect to DB
-conn = psycopg2.connect(**conn_params)
-
-# Create session SQLAlchemy
-engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
-Session = sessionmaker(bind=engine)
-session = Session()
+session = create_db_engine_and_session()
 
 
 def reset_auto_increment(table_name: str, column_name: str) -> None:

@@ -1,6 +1,5 @@
 from os import environ as env
 
-import psycopg2
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -16,6 +15,11 @@ class Settings:
     USER = env.get('USER')
     PASSWORD = env.get('PASSWORD')
 
+    @classmethod
+    def get_postgresql_connect_string(cls):
+        connection_string = f"postgresql://{cls.USER}:{cls.PASSWORD}@{cls.HOST}:{cls.PORT}/{cls.DATABASE}"
+        return connection_string
+
 
 class Config:
     DEBUG = True
@@ -27,19 +31,8 @@ class ProductionConfig(Config):
     DEBUG = False
 
 
-conn_params = {
-    'host': Settings.HOST,
-    'port': Settings.PORT,
-    'database': Settings.DATABASE,
-    'user': Settings.USER,
-    'password': Settings.PASSWORD,
-}
-
-conn = psycopg2.connect(**conn_params)
-
-
 # Create the database engine and session
 def create_db_engine_and_session():
-    engine = create_engine('postgresql+psycopg2://', creator=lambda: conn)
+    engine = create_engine(Settings.get_postgresql_connect_string())
     session = sessionmaker(bind=engine)
     return session()
