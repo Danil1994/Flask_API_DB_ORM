@@ -3,7 +3,6 @@ from web_app.db.models import Base
 
 
 def create_tables() -> None:
-    # Create tables
     engine = create_engine(Settings.get_postgresql_connect_string())
     Base.metadata.create_all(engine)
 

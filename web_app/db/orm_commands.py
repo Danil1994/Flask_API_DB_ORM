@@ -11,19 +11,23 @@ session = create_db_engine_and_session()
 
 
 # Find all groups with less or equal student count:
-def find_groups_with_student_count(student_count: int, _session: sqlalchemy.orm.Session = session) -> list[GroupModel]:
+def find_groups_with_student_count(student_count: int, _session: sqlalchemy.orm.Session = session) -> \
+        list[GroupModel] | str:
     try:
         groups = _session.query(GroupModel).join(GroupModel.students).group_by(GroupModel.id).having(
             func.count(StudentModel.id) <= student_count).all()
+        print(groups)
         return groups
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}"
 
 
 # Find all students related to the course with a given name:
 def find_students_related_to_the_course(course_name: str, _session: sqlalchemy.orm.Session = session) -> \
         list[StudentModel] | str:
     try:
+
         students = _session.query(StudentModel).join(StudentModel.courses).filter(
             CourseModel.name == course_name.capitalize()).all()
         return students

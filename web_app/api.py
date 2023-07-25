@@ -18,8 +18,7 @@ from web_app.db.orm_commands import (add_student_to_the_course,
 
 def serialize_model(model) -> {str: str}:
     return {
-        'id': model.id,
-        'name': model.name
+        'object': str(model)
     }
 
 
@@ -32,7 +31,8 @@ def output_formatted_data_from_dict(format_value: MyEnum, info_list: list[any] |
         return Response(response=json_str.encode('utf-8'), status=200, headers={'Content-Type': 'application/json'})
 
 
-def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] | dict, element_name: str) -> Response:
+def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] | dict,
+                                    element_name: str = 'element') -> Response:
     if format_value == MyEnum.XML:
         elements = ET.Element("response")
 
@@ -49,6 +49,7 @@ def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] |
         return Response(response=resp, status=200, headers={'Content-Type': 'application/xml'})
     else:
         json_list = [serialize_model(model) for model in info_list]
+        print(json_list)
         json_str = json.dumps(json_list)
         return Response(response=json_str.encode('utf-8'), status=200, headers={'Content-Type': 'application/json'})
 
@@ -60,7 +61,7 @@ class FindGroupsWithStudentCount(Resource):
         response_format = MyEnum(request.args.get('format', default='json'))
         response = find_groups_with_student_count(stud_count)
 
-        return output_formatted_data_from_list(response_format, response, 'group')
+        return output_formatted_data_from_list(response_format, response)
 
 
 class FindStudentsRelatedToTheCourse(Resource):
@@ -70,12 +71,12 @@ class FindStudentsRelatedToTheCourse(Resource):
         response_format = MyEnum(request.args.get('format', default='json'))
         response = find_students_related_to_the_course(course_name)
 
-        return output_formatted_data_from_dict(response_format, response)
+        return output_formatted_data_from_list(response_format, response)
 
 
 class CreateStudent(Resource):
     @swag_from('swagger/CreateStudent.yml')
-    def get(self) -> Response:
+    def post(self) -> Response:
         first_name = request.args.get('first_name')
         last_name = request.args.get('last_name')
         response_format = MyEnum(request.args.get('format', default='json'))
@@ -85,7 +86,7 @@ class CreateStudent(Resource):
 
 class DeleteStudent(Resource):
     @swag_from('swagger/DeleteStudent.yml')
-    def get(self, student_id) -> Response:
+    def delete(self, student_id) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         response = delete_student(student_id)
         return output_formatted_data_from_dict(response_format, response)
@@ -101,7 +102,7 @@ class AddStudentToTheCourse(Resource):
 
 class RemoveStudentFromCourse(Resource):
     @swag_from('swagger/RemoveStudentFromCourse.yml')
-    def get(self, student_id, course_id) -> Response:
+    def patch(self, student_id, course_id) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         response = remove_student_from_course(student_id, course_id)
         return output_formatted_data_from_dict(response_format, response)
@@ -112,5 +113,5 @@ class HelloWorld(Resource):
         return {
             'hello': "Its hello page, you may use next url : '/api/v1/groups',  '/api/v1/students',   /"
                      "'/api/v1/student/add', '/api/v1/student/del/<student_id>', /"
-                     "'/api/v1/student/<student_id>/add_course/<course_id>',           /"
-                     "    '/api/v1/student/<student_id>/course/<course_id>"}
+                     "'/api/v1/student/<student_id>/add_course/<course_id>', /"
+                     "'/api/v1/student/<student_id>/course/<course_id>"}

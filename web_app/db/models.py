@@ -39,8 +39,8 @@ class StudentModel(Base):
                            overlaps="student")
 
     def __repr__(self):
-        return f"Student(id={self.id}, group_id={self.group_id}, " \
-               f"first_name='{self.first_name}', last_name='{self.last_name}')"
+        return f"Student id={self.id}, group_id={self.group_id}, " \
+               f"first_name='{self.first_name}', last_name='{self.last_name}' "
 
 
 class CourseModel(Base):
