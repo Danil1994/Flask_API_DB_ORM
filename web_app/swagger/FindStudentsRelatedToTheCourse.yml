@@ -12,19 +12,16 @@ parameters:
 responses:
   200:
     description: Successful response
-    schema:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-          group_id:
-            type: integer
-          first_name:
-            type: string
-          last_name:
-            type: string
+    examples:
+      application/json:
+        [
+          {
+            "object": "Student id=131, group_id=1, first_name='John', last_name='Miller' "
+          },
+          {
+            "object": "Student id=133, group_id=2, first_name='Emma', last_name='Johnson' "
+          },
+        ]
   400:
     description: Bad request
   500:

@@ -17,17 +17,11 @@ parameters:
 responses:
   200:
     description: Successful response
-    schema:
-      type: object
-      properties:
-        id:
-          type: integer
-        group_id:
-          type: integer
-        first_name:
-          type: string
-        last_name:
-          type: string
+    examples:
+      application/json:
+        {
+          "Response": "New student ('Jon', 'Smit') created successfully"
+        }
   400:
     description: Bad request
   500:
