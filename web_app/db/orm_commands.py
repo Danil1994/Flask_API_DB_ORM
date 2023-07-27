@@ -37,9 +37,12 @@ def find_students_related_to_the_course(course_name: str, _session: sqlalchemy.o
 
 
 # Add a new student:
-def create_new_student(first_name: str, last_name: str, _session: sqlalchemy.orm.Session = session) -> dict[str, str]:
+def create_new_student(first_name: str, last_name: str, group_id, _session: sqlalchemy.orm.Session = session) -> \
+        dict[str, str]:
     try:
-        new_student = StudentModel(first_name=first_name.capitalize(), last_name=last_name.capitalize())
+        new_student = StudentModel(first_name=first_name.capitalize(),
+                                   last_name=last_name.capitalize(),
+                                   group_id=group_id)
         _session.add(new_student)
         _session.commit()
         logger.info('Student created successfully')

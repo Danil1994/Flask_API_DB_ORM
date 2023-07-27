@@ -35,8 +35,7 @@ class StudentModel(Base):
     last_name = Column(String)
 
     group = relationship("GroupModel", back_populates="students")
-    courses = relationship("CourseModel", secondary=StudentCourseAssociation.__table__, back_populates="students",
-                           overlaps="student")
+    courses = relationship("CourseModel", secondary=StudentCourseAssociation.__table__, back_populates="students")
 
     def __repr__(self):
         return f"Student id={self.id}, group_id={self.group_id}, " \
@@ -49,8 +48,7 @@ class CourseModel(Base):
     name = Column(String)
     description = Column(String)
 
-    students = relationship("StudentModel", secondary=StudentCourseAssociation.__table__, back_populates="courses",
-                            overlaps="student")
+    students = relationship("StudentModel", secondary=StudentCourseAssociation.__table__, back_populates="courses")
 
 
 ALL_MODELS = [StudentModel, CourseModel, GroupModel]

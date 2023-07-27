@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 import xml.etree.ElementTree as ET
 
+import blp as blp
 from dict2xml import dict2xml
 from flasgger import swag_from
 from flask import Response, request
+from flask.views import MethodView
 from flask_restful import Resource
 
 from web_app.constants import MyEnum
@@ -49,9 +51,19 @@ def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] |
         return Response(response=resp, status=200, headers={'Content-Type': 'application/xml'})
     else:
         json_list = [serialize_model(model) for model in info_list]
-        print(json_list)
         json_str = json.dumps(json_list)
         return Response(response=json_str.encode('utf-8'), status=200, headers={'Content-Type': 'application/json'})
+
+
+class Students(Resource):
+    def __init__(self, student_parser):
+        self.student_parser = student_parser
+    @swag_from('swagger/CreateStudent.yml')
+    def get(self):
+        args = self.student_parser
+        return (args['first_name'])
+
+
 
 
 class FindGroupsWithStudentCount(Resource):
@@ -79,8 +91,9 @@ class CreateStudent(Resource):
     def post(self) -> Response:
         first_name = request.args.get('first_name')
         last_name = request.args.get('last_name')
+        group_id = request.args.get('group_id')
         response_format = MyEnum(request.args.get('format', default='json'))
-        response = create_new_student(first_name, last_name)
+        response = create_new_student(first_name, last_name, group_id)
         return output_formatted_data_from_dict(response_format, response)
 
 
