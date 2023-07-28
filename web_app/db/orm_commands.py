@@ -10,6 +10,21 @@ from web_app.db.models import CourseModel, GroupModel, StudentModel
 session = create_db_engine_and_session()
 
 
+def get_all_students():
+    # Выполняем запрос для получения всех студентов из базы данных
+    students = session.query(StudentModel).all()
+    return students
+
+
+def find_student_by_id(student_id):
+    try:
+        student = session.query(StudentModel).filter_by(id=student_id).first()
+        return student
+    except Exception as e:
+        print(f"Ошибка при поиске студента: {e}")
+        return None
+
+
 # Find all groups with less or equal student count:
 def find_groups_with_student_count(student_count: int, _session: sqlalchemy.orm.Session = session) -> \
         list[GroupModel] | str:

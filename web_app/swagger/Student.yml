@@ -1,23 +1,23 @@
 parameters:
+  - name: student_id
+    in: query
+    description: student ID
+    type: int
   - name: first_name
     in: query
     description: First name of the student
-    required: true
     type: string
   - name: last_name
     in: query
     description: Last name of the student
-    required: true
     type: string
   - name: group_id
     in: query
-    description: Group ID of the student
-    required: true
-    type: integer
+    description: Group ID
+    type: int
   - name: format
     in: query
     description: Response format (optional)
-    required: false
     schema:
       type: string
       default: json

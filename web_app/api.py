@@ -3,18 +3,18 @@ from __future__ import annotations
 import json
 import xml.etree.ElementTree as ET
 
-import blp as blp
 from dict2xml import dict2xml
 from flasgger import swag_from
 from flask import Response, request
-from flask.views import MethodView
 from flask_restful import Resource
 
 from web_app.constants import MyEnum
 from web_app.db.orm_commands import (add_student_to_the_course,
                                      create_new_student, delete_student,
                                      find_groups_with_student_count,
+                                     find_student_by_id,
                                      find_students_related_to_the_course,
+                                     get_all_students,
                                      remove_student_from_course)
 
 
@@ -56,14 +56,33 @@ def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] |
 
 
 class Students(Resource):
-    def __init__(self, student_parser):
-        self.student_parser = student_parser
-    @swag_from('swagger/CreateStudent.yml')
+
+    @swag_from('swagger/Student.yml')
     def get(self):
-        args = self.student_parser
-        return (args['first_name'])
+        response_format = MyEnum(request.args.get('format', default='json'))
+        if request.args.get('student_id'):
+            student_id = request.args.get('student_id')
+            student = find_student_by_id(student_id)
+            response = serialize_model(student)
+            return output_formatted_data_from_dict(response_format, response)
 
+        if request.args.get('course_name'):
+            course = request.args.get('course_name')
+            response = find_students_related_to_the_course(course)
+            return output_formatted_data_from_list(response_format, response)
 
+        else:
+            response = get_all_students()
+            return output_formatted_data_from_list(response_format, response)
+
+    @swag_from('swagger/CreateStudent.yml')
+    def post(self) -> Response:
+        first_name = request.args.get('first_name')
+        last_name = request.args.get('last_name')
+        group_id = request.args.get('group_id')
+        response_format = MyEnum(request.args.get('format', default='json'))
+        response = create_new_student(first_name, last_name, group_id)
+        return output_formatted_data_from_dict(response_format, response)
 
 
 class FindGroupsWithStudentCount(Resource):
