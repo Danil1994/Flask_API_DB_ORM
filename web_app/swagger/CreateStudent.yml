@@ -30,11 +30,17 @@ parameters:
 responses:
   201:
     description: Successful response
-    examples:
-      application/json:
-        {
-          "Response": "New student ('Jon', 'Smit') created successfully"
-        }
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+        group_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
   400:
     description: Bad request
   500:

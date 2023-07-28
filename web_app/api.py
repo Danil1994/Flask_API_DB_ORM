@@ -107,7 +107,7 @@ class DeleteStudent(Resource):
 
 class AddStudentToTheCourse(Resource):
     @swag_from('swagger/AddStudentToTheCourse.yml')
-    def patch(self, student_id, course_id) -> Response:
+    def get(self, student_id, course_id) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         response = add_student_to_the_course(student_id, course_id)
         return output_formatted_data_from_dict(response_format, response)
@@ -115,7 +115,7 @@ class AddStudentToTheCourse(Resource):
 
 class RemoveStudentFromCourse(Resource):
     @swag_from('swagger/RemoveStudentFromCourse.yml')
-    def delete(self, student_id, course_id) -> Response:
+    def patch(self, student_id, course_id) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         response = remove_student_from_course(student_id, course_id)
         return output_formatted_data_from_dict(response_format, response)

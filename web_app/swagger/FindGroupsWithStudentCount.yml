@@ -12,23 +12,5 @@ parameters:
 responses:
   '200':
     description: Successful response
-    examples:
-      application/json:
-          [
-            {
-              "object": "Group 'XY-74' id=9"
-            },
-            {
-              "object": "Group 'MU-92' id=3"
-            },
-            ]
-    schema:
-      type: array
-      items:
-        type: object
-        properties:
-          object:
-            type: string
-
   '400':
     description: Bad request

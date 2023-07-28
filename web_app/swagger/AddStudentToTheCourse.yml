@@ -17,11 +17,6 @@ parameters:
 responses:
   200:
     description: Successful response
-    examples:
-      application/json:
-        {
-          "Response": "Student 200 was added successfully to the course 5"
-        }
   404:
     description: Student or course not found
   500:

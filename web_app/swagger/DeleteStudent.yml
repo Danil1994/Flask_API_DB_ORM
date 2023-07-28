@@ -12,11 +12,6 @@ parameters:
 responses:
   200:
     description: Successful response
-    examples:
-      application/json:
-        {
-          "Response": "Student 202 deleted successfully"
-        }
   404:
     description: Student not found
   500:
