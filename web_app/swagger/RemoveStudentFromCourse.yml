@@ -1,11 +1,11 @@
 parameters:
   - name: student_id
-    in: path
+    in: query
     description: ID of the student to be removed
     required: true
     type: integer
   - name: course_id
-    in: path
+    in: query
     description: ID of the course from which the student should be removed
     required: true
     type: integer
@@ -17,7 +17,17 @@ parameters:
 responses:
   200:
     description: Successful response
+    examples:
+      application/json:
+        {
+          "Response": "Student 200  was removed from the course 3"
+        }
   404:
     description: Student or course not found
+    examples:
+      application/json:
+        {
+          "Response error": "Course is not associated with the student"
+        }
   500:
     description: Internal server error

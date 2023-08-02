@@ -10,42 +10,13 @@ from web_app.db.models import CourseModel, GroupModel, StudentModel
 session = create_db_engine_and_session()
 
 
-def get_all_students():
-    # Выполняем запрос для получения всех студентов из базы данных
-    students = session.query(StudentModel).all()
-    return students
-
-
-def find_student_by_id(student_id):
-    try:
-        student = session.query(StudentModel).filter_by(id=student_id).first()
-        return student
-    except Exception as e:
-        print(f"Ошибка при поиске студента: {e}")
-        return None
-
-
 # Find all groups with less or equal student count:
 def find_groups_with_student_count(student_count: int, _session: sqlalchemy.orm.Session = session) -> \
         list[GroupModel] | str:
     try:
         groups = _session.query(GroupModel).join(GroupModel.students).group_by(GroupModel.id).having(
             func.count(StudentModel.id) <= student_count).all()
-        print(groups)
         return groups
-    except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
-        return f"An error occurred: {str(e)}"
-
-
-# Find all students related to the course with a given name:
-def find_students_related_to_the_course(course_name: str, _session: sqlalchemy.orm.Session = session) -> \
-        list[StudentModel] | str:
-    try:
-
-        students = _session.query(StudentModel).join(StudentModel.courses).filter(
-            CourseModel.name == course_name.capitalize()).all()
-        return students
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}"
@@ -61,7 +32,8 @@ def create_new_student(first_name: str, last_name: str, group_id, _session: sqla
         _session.add(new_student)
         _session.commit()
         logger.info('Student created successfully')
-        return {'Response': f"New student {first_name, last_name} created successfully"}
+        return {'Response': f"Student_id={new_student.id}, group_id={group_id}, first_name={first_name}, "
+                            f"last_name= {last_name} created successfully"}
     except Exception as e:
         logger.error("Error adding student: %s", str(e))
         return {'Response error': str(e)}
@@ -112,6 +84,14 @@ def remove_student_from_course(student_id: int, course_id: int, _session: sqlalc
     try:
         student = _session.query(StudentModel).get(student_id)
         course = _session.query(CourseModel).get(course_id)
+
+        if student is None:
+            logger.warning(f"Student with id {student_id} not found.")
+            return {'Response error': f"Student with id {student_id} not found."}
+
+        if course is None:
+            logger.warning(f"Course with id {course_id} not found.")
+            return {'Response error': f"Course with id {course_id} not found."}
 
         if course in student.courses:
             student.courses.remove(course)

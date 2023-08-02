@@ -24,17 +24,11 @@ parameters:
 responses:
   201:
     description: Successful response
-    schema:
-      type: object
-      properties:
-        id:
-          type: integer
-        group_id:
-          type: integer
-        first_name:
-          type: string
-        last_name:
-          type: string
+    examples:
+      application/json:
+        {
+          "Response": "Student id=5, group_id=1, first_name='Daniel', last_name='Wilson' created successfully"
+        }
   400:
     description: Bad request
   500:

@@ -1,8 +1,7 @@
 parameters:
-  - in: query
-    name: student_count
-    schema:
-      type: integer
+  - name: student_count
+    in: query
+    type: integer
     description: Number of students to filter by (optional)
   - in: query
     name: format
@@ -10,7 +9,14 @@ parameters:
       type: string
     description: Response format (optional)
 responses:
-  '200':
+  200:
     description: Successful response
-  '400':
+    examples:
+      application/json:
+        {
+          "object": "[Group 'PI-79' id=3]"
+        }
+  404:
     description: Bad request
+  500:
+    description: Internal server error

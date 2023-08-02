@@ -11,10 +11,10 @@ parameters:
     in: query
     description: Last name of the student
     type: string
-  - name: group_id
+  - name: course_name
     in: query
-    description: Group ID
-    type: int
+    description: Course name
+    type: string
   - name: format
     in: query
     description: Response format (optional)
@@ -22,19 +22,8 @@ parameters:
       type: string
       default: json
 responses:
-  201:
+  200:
     description: Successful response
-    schema:
-      type: object
-      properties:
-        id:
-          type: integer
-        group_id:
-          type: integer
-        first_name:
-          type: string
-        last_name:
-          type: string
   400:
     description: Bad request
   500:

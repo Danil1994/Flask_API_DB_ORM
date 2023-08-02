@@ -1,6 +1,6 @@
 parameters:
   - name: student_id
-    in: path
+    in: query
     description: ID of the student to be deleted
     required: true
     type: integer
@@ -12,6 +12,11 @@ parameters:
 responses:
   200:
     description: Successful response
+    examples:
+      application/json:
+        {
+          "Response": "Student 200 deleted successfully"
+        }
   404:
     description: Student not found
   500:

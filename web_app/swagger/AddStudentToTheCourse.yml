@@ -1,11 +1,11 @@
 parameters:
   - name: student_id
-    in: path
+    in: query
     description: ID of the student to be added
     required: true
     type: integer
   - name: course_id
-    in: path
+    in: query
     description: ID of the course to which the student should be added
     required: true
     type: integer
@@ -17,7 +17,17 @@ parameters:
 responses:
   200:
     description: Successful response
+    examples:
+      application/json:
+        {
+          "Response": "Student 201 was added successfully to the course 1"
+        }
   404:
     description: Student or course not found
+    examples:
+      application/json:
+        {
+          "Response error": "Courser 11 doesn`t exist"
+        }
   500:
     description: Internal server error
