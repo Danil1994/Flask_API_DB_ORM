@@ -59,29 +59,10 @@ def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] |
 class Students(Resource):
 
     @swag_from('swagger/Student.yml')
-    def get(self):
+    def get(self) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
-        student_query = session.query(StudentModel)
 
-        if request.args.get('student_id'):
-            student_id = request.args.get('student_id')
-            student = student_query.filter_by(id=student_id).first()
-            response = serialize_model(student)
-            return output_formatted_data_from_dict(response_format, response)
-
-        elif request.args.get('first_name'):
-            first_name = request.args.get('first_name').capitalize()
-            student = student_query.filter_by(first_name=first_name).all()
-            response = [serialize_model(student) for student in student]
-            return output_formatted_data_from_dict(response_format, response)
-
-        elif request.args.get('last_name'):
-            last_name = request.args.get('last_name').capitalize()
-            student = student_query.filter_by(last_name=last_name).all()
-            response = [serialize_model(student) for student in student]
-            return output_formatted_data_from_dict(response_format, response)
-
-        elif request.args.get('course_name'):
+        if request.args.get('course_name'):
             course_name = request.args.get('course_name').capitalize()
             course = session.query(CourseModel).filter_by(name=course_name).first()
             if not course:
@@ -91,19 +72,20 @@ class Students(Resource):
             response = [serialize_model(student) for student in students_on_course]
             return output_formatted_data_from_list(response_format, response)
 
-        else:
-            students = session.query(StudentModel)
-            response = [serialize_model(student) for student in students]
+        request_args = request.args.to_dict()
+        capitalized_args = {key: value.capitalize() for key, value in request_args.items()}
+        query = session.query(StudentModel).filter_by(**capitalized_args)
+        response = query.all()
 
-            return output_formatted_data_from_list(response_format, response)
+        response = [serialize_model(student) for student in response]
+        return output_formatted_data_from_list(response_format, response)
 
     @swag_from('swagger/CreateStudent.yml')
     def post(self) -> Response:
-        first_name = request.args.get('first_name')
-        last_name = request.args.get('last_name')
-        group_id = request.args.get('group_id')
+        request_args = request.args.to_dict()
+        capitalized_args = {key: value.capitalize() for key, value in request_args.items()}
         response_format = MyEnum(request.args.get('format', default='json'))
-        response = create_new_student(first_name, last_name, group_id)
+        response = create_new_student(**capitalized_args)
         return output_formatted_data_from_dict(response_format, response)
 
     @swag_from('swagger/DeleteStudent.yml')
@@ -126,7 +108,7 @@ class Groups(Resource):
 
 class Courses(Resource):
     @swag_from('swagger/AddStudentToTheCourse.yml')
-    def patch(self):
+    def patch(self) -> Response:
         response_format = MyEnum(request.args.get('format', default='json'))
         student_id = request.args.get('student_id')
         course_id = request.args.get('course_id')
