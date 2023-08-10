@@ -1,3 +1,6 @@
+"""generate test data in the tables. !!!WARNING!!! before create
+this func delete all existing data."""
+
 import sqlalchemy
 from sqlalchemy import text
 

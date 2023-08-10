@@ -1,3 +1,5 @@
+"""this file has func which work with BD. """
+
 from __future__ import annotations
 
 import sqlalchemy
@@ -32,8 +34,8 @@ def create_new_student(first_name: str, last_name: str, group_id, _session: sqla
         _session.add(new_student)
         _session.commit()
         logger.info('Student created successfully')
-        return {'Response': f"Student_id={new_student.id}, group_id={group_id}, first_name={first_name}, "
-                            f"last_name= {last_name} created successfully"}
+        return {'Response': f"Student_id = {new_student.id}, group_id = {group_id}, first_name={first_name}, "
+                            f"last_name = {last_name} created successfully"}
     except Exception as e:
         logger.error("Error adding student: %s", str(e))
         return {'Response error': str(e)}

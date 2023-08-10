@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-import json
-import xml.etree.ElementTree as ET
-
-from dict2xml import dict2xml
 from flasgger import swag_from
 from flask import Response, request
 from flask_restful import Resource
+from sqlalchemy.orm import aliased
 
 from config import create_db_engine_and_session
-from web_app.constants import MyEnum
-from web_app.db.models import CourseModel, StudentModel
+from web_app.db.formated_func import output_formatted_decorator
+from web_app.db.models import (CourseModel, GroupModel,
+                               StudentCourseAssociation, StudentModel)
 from web_app.db.orm_commands import (add_student_to_the_course,
                                      create_new_student, delete_student,
                                      find_groups_with_student_count,
@@ -19,106 +17,75 @@ from web_app.db.orm_commands import (add_student_to_the_course,
 session = create_db_engine_and_session()
 
 
-def serialize_model(model) -> {str: str}:
-    return {
-        'object': str(model)
-    }
-
-
-def output_formatted_data_from_dict(format_value: MyEnum, info_list: list[any] | dict) -> Response:
-    if format_value == MyEnum.XML:
-        resp = dict2xml(info_list, indent=" ")
-        return Response(response=resp, status=200, headers={'Content-Type': 'application/xml'})
-    else:
-        json_str = json.dumps(info_list)
-        return Response(response=json_str.encode('utf-8'), status=200, headers={'Content-Type': 'application/json'})
-
-
-def output_formatted_data_from_list(format_value: MyEnum, info_list: list[any] | dict,
-                                    element_name: str = 'element') -> Response:
-    if format_value == MyEnum.XML:
-        elements = ET.Element("response")
-
-        for item_info in info_list:
-            element = ET.SubElement(elements, element_name)
-            if isinstance(item_info, dict):
-                for key, value in item_info.items():
-                    ET.SubElement(element, key).text = str(value)
-            else:
-                ET.SubElement(element, "value").text = str(item_info)
-
-        resp = ET.tostring(elements, encoding="unicode")
-
-        return Response(response=resp, status=200, headers={'Content-Type': 'application/xml'})
-    else:
-        json_list = [serialize_model(model) for model in info_list]
-        json_str = json.dumps(json_list)
-        return Response(response=json_str.encode('utf-8'), status=200, headers={'Content-Type': 'application/json'})
-
-
 class Students(Resource):
-
     @swag_from('swagger/Student.yml')
+    @output_formatted_decorator
     def get(self) -> Response:
-        response_format = MyEnum(request.args.get('format', default='json'))
-
-        if request.args.get('course_name'):
-            course_name = request.args.get('course_name').capitalize()
-            course = session.query(CourseModel).filter_by(name=course_name).first()
-            if not course:
-                return output_formatted_data_from_dict(response_format, {'error': 'Course not found'})
-
-            students_on_course = course.students
-            response = [serialize_model(student) for student in students_on_course]
-            return output_formatted_data_from_list(response_format, response)
+        Student = aliased(StudentModel)
+        Course = aliased(CourseModel)
 
         request_args = request.args.to_dict()
         capitalized_args = {key: value.capitalize() for key, value in request_args.items()}
-        query = session.query(StudentModel).filter_by(**capitalized_args)
-        response = query.all()
 
-        response = [serialize_model(student) for student in response]
-        return output_formatted_data_from_list(response_format, response)
+        query = (
+            session.query(Student.id, Student.group_id, Student.first_name, Student.last_name, Course.name)
+            .join(StudentCourseAssociation, Student.id == StudentCourseAssociation.student_id)
+            .join(Course, StudentCourseAssociation.course_id == Course.id)
+        )
+
+        if 'id' in capitalized_args:
+            result = query.filter(Student.id == capitalized_args['id'])
+            return result.all()
+        if 'course_name' in capitalized_args:
+            query = query.filter(Course.name == capitalized_args['course_name'])
+        if 'first_name' in capitalized_args:
+            query = query.filter(Student.first_name == capitalized_args['first_name'])
+        if 'last_name' in capitalized_args:
+            query = query.filter(Student.last_name == capitalized_args['last_name'])
+
+        result = query.all()
+        return result
 
     @swag_from('swagger/CreateStudent.yml')
-    def post(self) -> Response:
+    @output_formatted_decorator
+    def post(self) -> dict[str, str]:
         request_args = request.args.to_dict()
         capitalized_args = {key: value.capitalize() for key, value in request_args.items()}
-        response_format = MyEnum(request.args.get('format', default='json'))
-        response = create_new_student(**capitalized_args)
-        return output_formatted_data_from_dict(response_format, response)
+        response = create_new_student(capitalized_args['first_name'], capitalized_args['last_name'], capitalized_args[
+            'group_id'])
+
+        return response
 
     @swag_from('swagger/DeleteStudent.yml')
-    def delete(self) -> Response:
+    @output_formatted_decorator
+    def delete(self) -> dict[str, str]:
         student_id = request.args.get('student_id')
-        response_format = MyEnum(request.args.get('format', default='json'))
         response = delete_student(int(student_id))
-        return output_formatted_data_from_dict(response_format, response)
+        return response
 
 
 class Groups(Resource):
     @swag_from('swagger/FindGroupsWithStudentCount.yml')
-    def get(self) -> Response:
+    @output_formatted_decorator
+    def get(self) -> list[GroupModel] | str:
         stud_count = request.args.get('student_count', default=20)
-        response_format = MyEnum(request.args.get('format', default='json'))
-        groups = find_groups_with_student_count(stud_count)
-        response = serialize_model(groups)
-        return output_formatted_data_from_dict(response_format, response)
+        response = find_groups_with_student_count(stud_count)
+        return response
 
 
 class Courses(Resource):
     @swag_from('swagger/AddStudentToTheCourse.yml')
-    def patch(self) -> Response:
-        response_format = MyEnum(request.args.get('format', default='json'))
+    @output_formatted_decorator
+    def patch(self) -> dict[str, str]:
         student_id = request.args.get('student_id')
         course_id = request.args.get('course_id')
         response = add_student_to_the_course(int(student_id), int(course_id))
-        return output_formatted_data_from_dict(response_format, response)
+        return response
 
     @swag_from('swagger/RemoveStudentFromCourse.yml')
-    def delete(self) -> Response:
-        response_format = MyEnum(request.args.get('format', default='json'))
+    @output_formatted_decorator
+    def delete(self) -> dict[str, str]:
         student_id = request.args.get('student_id')
         course_id = request.args.get('course_id')
         response = remove_student_from_course(int(student_id), int(course_id))
-        return output_formatted_data_from_dict(response_format, response)
+        return response

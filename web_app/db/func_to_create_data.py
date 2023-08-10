@@ -1,3 +1,4 @@
+"""funcs generating random data to the DB."""
 import random
 import string
 
