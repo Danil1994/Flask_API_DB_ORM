@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import functools
+
 from flasgger import swag_from
 from flask import Response, request
 from flask_restful import Resource
 from sqlalchemy.orm import aliased
 
 from config import create_db_engine_and_session
-from web_app.db.formated_func import output_formatted_decorator
+from web_app.constants import MyEnum
+from web_app.db.formated_func import (output_formatted_data_from_dict,
+                                      output_formatted_data_from_list)
 from web_app.db.models import (CourseModel, GroupModel,
                                StudentCourseAssociation, StudentModel)
 from web_app.db.orm_commands import (add_student_to_the_course,
@@ -15,6 +19,20 @@ from web_app.db.orm_commands import (add_student_to_the_course,
                                      remove_student_from_course)
 
 session = create_db_engine_and_session()
+
+
+# decorator which convert fucn result to json/xml format depending on the response format and type of fucn result
+def output_formatted_decorator(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        func_result = func(*args, **kwargs)
+        response_format = MyEnum(request.args.get('format', default='json'))
+        if type(func_result) is list:
+            return output_formatted_data_from_list(response_format, func_result)
+        else:
+            return output_formatted_data_from_dict(response_format, func_result)
+
+    return wrapper
 
 
 class Students(Resource):
