@@ -1,6 +1,6 @@
 ### INSTALL
 
-1. Run 'git clone https://git.foxminded.ua/foxstudent103370/task_10.git'
+1. Run 'git clone https://github.com/Danil1994/Flask_API_DB_ORM.git'
 2. Install requirements, run _'pip install -r requirements.txt'_
 3. Create .env file like .env.example
 4. Create **PostgreSQL** database.
