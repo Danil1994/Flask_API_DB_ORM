@@ -2,7 +2,7 @@ import random
 from unittest import mock
 
 from tests.base_test_class import BaseTest
-from web_app.db.create_test_data import session
+from create_test_data import session
 from web_app.db.models import (CourseModel, StudentCourseAssociation,
                                StudentModel)
 from web_app.db.orm_commands import (add_student_to_the_course,
